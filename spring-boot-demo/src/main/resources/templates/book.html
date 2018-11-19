@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<!--lang="en" htm5 tag-->
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <!--for responsive-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Import Bootstrap -->
+    <!--first give path of the css file(href="../static/css/bootstrap.min.css"),
+    then import it to thymeleaf(th:ref="@{/css/bootstrap.min.css}")-->
+    <link th:href="@{/css/bootstrap.min.css}"  href="../static/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script th:src="@{/js/bootstrap.min.js}" src="../static/js/bootstrap.min.js"></script>
+    <title>Book Detail</title>
+</head>
+
+<!--fang fa 1-->
+<!--<body>
+    <div>
+        <p>
+            <strong>Name: </strong><span th:text="${book.name}">name1</span>
+        </p>
+        <p>
+            <strong>Author: </strong><span th:text="${book.author}">author1</span></span>
+        </p>
+        <p>
+            <strong>Description: </strong><span th:text="${book.description}">des1</span></span>
+        </p>
+        <p>
+            <strong>Status: </strong><span th:text="${book.status}">0</span></span>
+        </p>
+    </div>
+</body>-->
+
+    <!--fang fa 2-->
+    <body th:object="${book}" style="max-width: 700px">
+
+    <h2 class="page-header" style="margin-top:50px">Details</h2>
+        <div class="container">
+
+             <div class="well">
+
+                <p>
+                    <strong>Name: </strong><span th:text="*{name}">name1</span>
+                </p>
+                <p>
+                    <strong>Author: </strong><span th:text="*{author}">author1</span>
+                </p>
+                <p>
+                    <strong>Description: </strong><span th:text="*{description}">des1</span>
+                </p>
+                <p th:switch="*{status}">
+                        <strong>Status: </strong>
+                        <span th:case="0">about to read</span>
+                        <span th:case="1">reading</span>
+                        <span th:case="2">read</span>
+
+                </p>
+
+
+            </div>
+            <div class="alert alert-success" th:unless="*{status==0}">
+                <strong>good</strong>
+            </div>
+            <div class="alert alert-warning" th:if="*{status==0}">
+                <strong>bad</strong>
+            </div>
+
+            <a class="btn btn-default" href="javascript:history.go(-1)">Back</a>
+        </div>
+    </body>
+</html>

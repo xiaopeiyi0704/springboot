@@ -1,0 +1,113 @@
+<<<<<<< HEAD
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>books</title>
+</head>
+<body>
+
+<h1>book list</h1>
+=======
+<!DOCTYPE html>
+<!--lang="en" htm5 tag-->
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <!--for responsive-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Import Bootstrap -->
+    <!--first give path of the css file(href="../static/css/bootstrap.min.css"),
+    then import it to thymeleaf(th:ref="@{/css/bootstrap.min.css}")-->
+    <link th:href="@{/css/bootstrap.min.css}"  href="../static/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script th:src="@{/js/bootstrap.min.js}" src="../static/js/bootstrap.min.js"></script>
+    <title>Book Detail</title>
+</head>
+
+<!--fang fa 2-->
+<body th:object="${book}" style="max-width: 700px">
+
+<h2 class="page-header" style="margin-top:50px">Book List</h2>
+<div class="container">
+
+
+
+        <!-- <p>
+             <strong>Name: </strong><span th:text="*{name}">name1</span>
+         </p>
+         <p>
+             <strong>Author: </strong><span th:text="*{author}">author1</span>
+         </p>
+         <p>
+             <strong>Description: </strong><span th:text="*{description}">des1</span>
+         </p>
+         <p th:switch="*{status}">
+                 <strong>Status: </strong>
+                 <span th:case="0">about to read</span>
+                 <span th:case="1">reading</span>
+                 <span th:case="2">read</span>
+
+         </p>
+
+
+     </div>
+     <div class="alert alert-success" th:unless="*{status==0}">
+         <strong>good</strong>
+     </div>
+     <div class="alert alert-warning" th:if="*{status==0}">
+         <strong>bad</strong>-->
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Author</th>
+                    <th>Description</th>
+                    <th>ISBN</th>
+                    <th>Status</th>
+
+                </tr>
+            </thead>
+            <tbody>
+            <!--different with JSP is, jsp if/else, loop use a tag/element to contain the content that needs loop
+            but thymeleaf put it in the content's own tag/element -->
+
+            <!--
+            iterStat:
+                    count: count, start from 1
+                    index: index, start from 0
+                    size:  size of the loop
+                    even/odd: identify even or odd
+                    first:last: if first/last record in the loop, return true or false
+            -->
+                <tr th:each="book,iterStat:${books}" th:class="${iterStat.even}? 'bg-success':'bg-danger'">
+                    <td th:text="${iterStat.count}"></td>
+                    <td><a href="#" th:text="${book.name}" th:href="@{/book/{id}(id=${book.id})}"></a></td>
+                    <!-- to achieve above, we can also do it by string contactate
+                    <td><a href="#" th:text="${book.name}" th:href="@{'/book/'+'${book.id}'}"></a></td>
+                    -->
+                    <td th:text="${book.author}"></td>
+                    <td th:text="${book.description}"></td>
+                    <td th:text="${book.isbn}"></td>
+                    <td th:switch="${book.status}">
+                            <strong>Status: </strong>
+                            <span th:case="0">about to read</span>
+                            <span th:case="1">reading</span>
+                            <span th:case="2">read</span>
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+
+        <!--back button-->
+    <!--th:text= should put object atrribute value, not direct string. otherwise cannot parse, if direct string
+    then just put between tag (default value format)-->
+
+</div>
+</body>
+</html>

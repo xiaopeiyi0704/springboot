@@ -1,0 +1,51 @@
+2018-10-09 00:04:48.887  INFO 13932 --- [main] com.xpy.SpringBootDemoApplication        : Starting SpringBootDemoApplication on ALP-PC0BS4QK with PID 13932 (C:\Users\pxiao\IdeaProjects\spring-boot-demo\target\classes started by pxiao in C:\Users\pxiao\IdeaProjects\spring-boot-demo)
+2018-10-09 00:04:48.895 DEBUG 13932 --- [main] com.xpy.SpringBootDemoApplication        : Running with Spring Boot v2.0.2.RELEASE, Spring v5.0.6.RELEASE
+2018-10-09 00:04:48.897  INFO 13932 --- [main] com.xpy.SpringBootDemoApplication        : The following profiles are active: dev
+2018-10-09 00:04:48.941  INFO 13932 --- [main] ConfigServletWebServerApplicationContext : Refreshing org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext@4b5d6a01: startup date [Tue Oct 09 00:04:48 EDT 2018]; root of context hierarchy
+2018-10-09 00:04:49.786  INFO 13932 --- [main] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$1b834cf4] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-10-09 00:04:50.010  INFO 13932 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8888 (http)
+2018-10-09 00:04:50.030  INFO 13932 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2018-10-09 00:04:50.030  INFO 13932 --- [main] org.apache.catalina.core.StandardEngine  : Starting Servlet Engine: Apache Tomcat/8.5.31
+2018-10-09 00:04:50.034  INFO 13932 --- [localhost-startStop-1] o.a.catalina.core.AprLifecycleListener   : The APR based Apache Tomcat Native library which allows optimal performance in production environments was not found on the java.library.path: [C:\Program Files\Java\jdk1.8.0_131\bin;C:\windows\Sun\Java\bin;C:\windows\system32;C:\windows;C:\Program Files\Java\jdk1.7.0_85\bin;C:\ProgramData\Oracle\Java\javapath;C:\windows\system32;C:\windows;C:\windows\System32\Wbem;C:\windows\System32\WindowsPowerShell\v1.0\;C:\Program Files\SafeNet\Authentication\SAC\x64;C:\Program Files\SafeNet\Authentication\SAC\x32;C:\Program Files (x86)\Microsoft SQL Server\Client SDK\ODBC\130\Tools\Binn\;C:\Program Files (x86)\Microsoft SQL Server\140\Tools\Binn\;C:\Program Files (x86)\Microsoft SQL Server\140\DTS\Binn\;C:\Program Files (x86)\Microsoft SQL Server\140\Tools\Binn\ManagementStudio\;C:\Program Files\PuTTY\;C:\Program Files\TortoiseSVN\bin;C:\apache-maven-3.3.9\bin;C:\Program Files (x86)\mysql-5.7.23\bin;C:\Users\pxiao\AppData\Local\Microsoft\WindowsApps;.]
+2018-10-09 00:04:50.138  INFO 13932 --- [localhost-startStop-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2018-10-09 00:04:50.138  INFO 13932 --- [localhost-startStop-1] o.s.web.context.ContextLoader            : Root WebApplicationContext: initialization completed in 1197 ms
+2018-10-09 00:04:50.249  INFO 13932 --- [localhost-startStop-1] o.s.b.w.servlet.ServletRegistrationBean  : Servlet dispatcherServlet mapped to [/]
+2018-10-09 00:04:50.252  INFO 13932 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'characterEncodingFilter' to: [/*]
+2018-10-09 00:04:50.253  INFO 13932 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+2018-10-09 00:04:50.254  INFO 13932 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'httpPutFormContentFilter' to: [/*]
+2018-10-09 00:04:50.254  INFO 13932 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'requestContextFilter' to: [/*]
+2018-10-09 00:04:50.374  INFO 13932 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2018-10-09 00:04:50.524  INFO 13932 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2018-10-09 00:04:50.559  INFO 13932 --- [main] j.LocalContainerEntityManagerFactoryBean : Building JPA container EntityManagerFactory for persistence unit 'default'
+2018-10-09 00:04:50.571  INFO 13932 --- [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [
+	name: default
+	...]
+2018-10-09 00:04:50.687  INFO 13932 --- [main] org.hibernate.Version                    : HHH000412: Hibernate Core {5.2.17.Final}
+2018-10-09 00:04:50.689  INFO 13932 --- [main] org.hibernate.cfg.Environment            : HHH000206: hibernate.properties not found
+2018-10-09 00:04:50.727  INFO 13932 --- [main] o.hibernate.annotations.common.Version   : HCANN000001: Hibernate Commons Annotations {5.0.1.Final}
+2018-10-09 00:04:50.835  INFO 13932 --- [main] org.hibernate.dialect.Dialect            : HHH000400: Using dialect: org.hibernate.dialect.MySQL5Dialect
+2018-10-09 00:04:51.221  INFO 13932 --- [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2018-10-09 00:04:51.446  INFO 13932 --- [main] o.h.h.i.QueryTranslatorFactoryInitiator  : HHH000397: Using ASTQueryTranslatorFactory
+2018-10-09 00:04:51.642  INFO 13932 --- [main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/**/favicon.ico] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+2018-10-09 00:04:51.862  INFO 13932 --- [main] s.w.s.m.m.a.RequestMappingHandlerAdapter : Looking for @ControllerAdvice: org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext@4b5d6a01: startup date [Tue Oct 09 00:04:48 EDT 2018]; root of context hierarchy
+2018-10-09 00:04:51.886  WARN 13932 --- [main] aWebConfiguration$JpaWebMvcConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2018-10-09 00:04:51.917  INFO 13932 --- [main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/api/v2/books/{id}],methods=[GET]}" onto public com.xpy.model.Book com.xpy.web.BookController.getOneBook(java.lang.Long)
+2018-10-09 00:04:51.918  INFO 13932 --- [main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/api/v2/books/update],methods=[POST]}" onto public int com.xpy.web.BookController.updateABook(java.lang.String,int)
+2018-10-09 00:04:51.919  INFO 13932 --- [main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/api/v2/books/{id}],methods=[DELETE]}" onto public void com.xpy.web.BookController.deleteBook(java.lang.Long)
+2018-10-09 00:04:51.919  INFO 13932 --- [main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/api/v2/books],methods=[GET]}" onto public java.util.List<com.xpy.model.Book> com.xpy.web.BookController.getBooks()
+2018-10-09 00:04:51.920  INFO 13932 --- [main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/api/v2/books],methods=[PUT]}" onto public com.xpy.model.Book com.xpy.web.BookController.updateBook(java.lang.String,java.lang.String,java.lang.String,java.lang.String,int,java.lang.Long)
+2018-10-09 00:04:51.920  INFO 13932 --- [main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/api/v2/books/],methods=[POST]}" onto public java.util.List<com.xpy.model.Book> com.xpy.web.BookController.findByAuthorAndStatus2(int)
+2018-10-09 00:04:51.921  INFO 13932 --- [main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/api/books],methods=[GET]}" onto public java.lang.String com.xpy.web.HelloController.getAll()
+2018-10-09 00:04:51.921  INFO 13932 --- [main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/api/say]}" onto public java.lang.String com.xpy.web.HelloController.hello()
+2018-10-09 00:04:51.923  INFO 13932 --- [main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/error]}" onto public org.springframework.http.ResponseEntity<java.util.Map<java.lang.String, java.lang.Object>> org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController.error(javax.servlet.http.HttpServletRequest)
+2018-10-09 00:04:51.923  INFO 13932 --- [main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/error],produces=[text/html]}" onto public org.springframework.web.servlet.ModelAndView org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController.errorHtml(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)
+2018-10-09 00:04:51.946  INFO 13932 --- [main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/webjars/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+2018-10-09 00:04:51.947  INFO 13932 --- [main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+2018-10-09 00:04:52.210  INFO 13932 --- [main] o.s.j.e.a.AnnotationMBeanExporter        : Registering beans for JMX exposure on startup
+2018-10-09 00:04:52.212  INFO 13932 --- [main] o.s.j.e.a.AnnotationMBeanExporter        : Bean with name 'dataSource' has been autodetected for JMX exposure
+2018-10-09 00:04:52.216  INFO 13932 --- [main] o.s.j.e.a.AnnotationMBeanExporter        : Located MBean 'dataSource': registering with JMX server as MBean [com.zaxxer.hikari:name=dataSource,type=HikariDataSource]
+2018-10-09 00:04:52.247  INFO 13932 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8888 (http) with context path ''
+2018-10-09 00:04:52.249  INFO 13932 --- [main] com.xpy.SpringBootDemoApplication        : Started SpringBootDemoApplication in 3.713 seconds (JVM running for 4.361)
+2018-10-09 00:05:10.033  INFO 13932 --- [http-nio-8888-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring FrameworkServlet 'dispatcherServlet'
+2018-10-09 00:05:10.034  INFO 13932 --- [http-nio-8888-exec-1] o.s.web.servlet.DispatcherServlet        : FrameworkServlet 'dispatcherServlet': initialization started
+2018-10-09 00:05:10.057  INFO 13932 --- [http-nio-8888-exec-1] o.s.web.servlet.DispatcherServlet        : FrameworkServlet 'dispatcherServlet': initialization completed in 23 ms
