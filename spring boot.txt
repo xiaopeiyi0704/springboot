@@ -1,0 +1,1732 @@
+
+---------------------------------------------Annotation---------------------------------------------
+@Temporal
+@Scope("prototype")
+
+
+----------------------------------------------------------------------------------------------------
+
+spring boot
+activeMQ
+hazel cache or encache
+docker
+linux
+react.js
+
+---------------------------------------------@Scope---------------------------------------------
+@Scope("prototype")...
+===============================
+singleton – Return a single bean instance per Spring IoC container
+prototype – Return a new bean instance each time when requested
+request – Return a single bean instance per HTTP request. *
+session – Return a single bean instance per HTTP session. *
+globalSession – Return a single bean instance per global HTTP session. *
+
+
+---------------------------------------@Component VS @Bean---------------------------------------
+@Component (and @Service and @Repository) are used to auto-detect and auto-configure beans using classpath scanning. 
+There's an implicit one-to-one mapping between the annotated class and the bean (i.e. one bean per class). 
+Control of wiring is quite limited with this approach, since it's purely declarative.
+
+@Bean is used to explicitly declare a single bean, rather than letting Spring do it automatically as above. 
+It decouples the declaration of the bean from the class definition, and lets you create and configure beans exactly how you choose.
+
+@Component Preferable for component scanning and automatic wiring.
+
+When should you use @Bean?
+
+Sometimes automatic configuration is not an option. 
+When? Let's imagine that you want to wire components from 3rd-party libraries 
+(you don't have the source code so you can't annotate its classes with @Component), so automatic configuration is not possible.
+
+The @Bean annotation returns an object that spring should register as bean in application context. 
+The body of the method bears the logic responsible for creating the instance.
+
+@component and its specializations(@Controller, @service, @repository) allow for auto-detection using classpath scanning. 
+If we see component class like @Controller, @service, @repository will be scan automatically by the spring framework using the component scan.
+
+@Bean on the other hand can only be used to explicitly declare a single bean in a configuration class.
+
+@Bean used to explicitly declare a single bean, rather than letting spring do it automatically. 
+Its make separate declaration of bean from the class definition.
+In short @Controller, @service, @repository are for auto-detection and @Bean to create separate bean from class
+
+
+---------------------------------------------url 路由---------------------------------------------
+@RequestMapping
+===============================
+
+@RequestMapping("xxx")/@RequestMapping(value="xxx")--如果没有其他attribute前者写法OK. 如果有其他attribute,那么用后者写法，加上value="xxx"(name/pair)
+@RequestMapping("xxx")--可以放在方法也可以放在class.如果放在class上那么先要map的class下一步才再map到方法上
+@RequestMapping("api")--如果不给出method那么所有method都支持 get, post, put ,delete....
+@RequestMapping(value="/say", method = RequestMethod.POST)--如果给出method那么只支持该method的请求
+
+
+@PostMapping/@DeleteMapping/...
+===============================
+@PostMapping("xxx")--这种方法可以代替@RequestMapping(value="/say", method = RequestMethod.POST)，既有了方法又有了路径
+
+
+@Controller vs @RequestController
+===============================
+@controller -- 如果使用这个就不是REST风格的返回值了. REST风格的返回值是JSON String 而@Controller返回的是view(JSP/HTML/...)的名字
+@RequestController --是@controller和@ResponseBody的结合体， 既表达了是controller有表达了要REST风格的response
+所以如果用@controller的话，在方法下给出@ResponseBody该方法就能获得REST风格的返回体。其它没有@ResponseBody的方法还是得到view的返回体。
+如果在@RestController下某些方法如果让某些方法得到view的返回体？？？？？
+
+
+---------------------------------------------url 参数---------------------------------------------
+@PathVariable
+===============================
+	@PathVariable use at 方法的parameter上 like
+    @GetMapping("/books/{idxx}")
+    public Object getOne(@PathVariable long idxx){
+		......
+	}
+在路径定义的时候大括号里的variable name {xx}, 一定要和方法里的制定的@PathVariable的参数的name 一样。他们就靠这个相认呢。。。
+或者，我说或者 注意点瞅啥呢，或者我又想传过来 又不想在方法里用那个名字呢， 可以这样
+	@PathVariable use at 方法的parameter上 like
+    @GetMapping("/books/{idxx}")
+    public Object getOne(@PathVariable("idxx") long wojiubuidxx){
+		......
+	}
+
+
+但至于数据类型，从browser那过来的都是String, 到方法这只要名字匹配，spring就会尝试给你自动转换。除非转换失败 比如 路径里的是abc，方法要求的是int那就转不了
+
+
+url如果传多个参数
+    @GetMapping("/books/{id}/{username}")
+    public Object getOne(@PathVariable("id") long wojiubuidxx, @PathVariable String username){
+		......
+	}
+
+url参数顺序可以按照需求置换
+    @GetMapping("/{id}/books/{username}")
+    public Object getOne(@PathVariable("id") long wojiubuidxx, @PathVariable String username){
+		......
+	}
+	
+url参数可以通过RegEx做基本的validation
+	@GetMapping("/{id}/books/{username:这里放正则表达式}") -- 这样标注了username表需要符合这个表达式
+	
+
+---------------------------------------------url 参数---------------------------------------------
+@RequestParam 请求参数 --used for accessing the values of the query parameters--is to obtain an parameter from the URI 
+@PathVariable 路径参数 --used for accessing the values from the URI template--is to obtain some placeholder from the URI
+@RequestParam is optional, but @PathVariable you have to follow the pattern in the url
+@RequestParam vs @PathVariable in Spring just like @PathParam vs @QueryParam in JAX-RS
+
+
+Example
+	@RequestMapping("/hello/{id}") //http://localhost:8080/springmvc/hello/101?param1=10%26param2=20
+	public String getDetails(
+		@PathVariable(value="id") String id,
+		@RequestParam(value="param1", required=true) String param1,
+		@RequestParam(value="param2", required=false) String param2){
+		.......
+}
+通过required来设置参数是否是optional的
+还可以给参数设置default value
+public String getDetails(
+		@RequestParam(value="param1", required=true) String param1,
+		@RequestParam(value="param2", required=false， defaultValue="xxx") String param2){
+		.......
+}
+
+
+---------------------------------------------配置文件---------------------------------------------
+可以在application.properties里面进行自定义配置(也可以通过其他方式更改这个配置文件的名字)
+还可以自定义application.properties的存放地方，比如我们可以另建一个文件夹config把application.properties放在里面
+如果根目录下有个配置文件，自定义的地方config文件夹里还有配置文件，那么会用到自定义的那里 因为config这个文件夹是spring首要搜索配置文件的文件夹（换成别的名字就不知道了，你可以试试）
+
+一些配置的例子
+server.port=8888
+server.context-path=/api
+logging.level.root=WARN //设置整个的log level
+logging.level.com.xpy=DEBUG //设置application里面某个包下的level
+logging.file=logs/my.log //设置log文件的location 
+
+配置文件除了最基本的.txt style的 还可以是其他格式的，比如.yml
+server:
+ port: 8888 //: 后面要有空格
+logging:
+ level:
+  root: WARN
+  com.xpy: DEBUG
+ file: logs/my.log
+ 
+配置文件里还可以配置一些application里要用的value(数据)，比如
+book.name: Harri Potter
+book.isbn: 123123123
+book.author: JKR
+
+@Value
+===============================
+在java class里面可以通过@Value来map class里的变量名与配置文件里的内容相对应(以上面文件里内容为例)
+@Value("${book.name}")
+private String name;
+
+@Value("${book.isbn}")
+private String isbn;
+
+@Value("${book.author}")
+private String author;
+通过这个就可以自动把配置文件里相对应的值注入到这些变量里了
+
+在配置文件里的数据还可以引用其他在文件里的数据 比如我们可以另建一个文件夹config把application
+book.name: Harri Potter
+book.isbn: 123123123
+book.author: JKR
+book.description: ${book.name} is a good book
+
+在配置文件里还可以使用一些spring的一些库去做一些事情，比如在文件里配置一个随机数给isbn
+book.name: Harri Potter
+book.isbn: ${random.uuid}
+book.author: JKR
+book.description: ${book.name} is a good book
+
+
+@ConfigurationProperties
+===============================
+如果我们有一个实例，想把配置文件里的值/数据都自动注入到实例的属性里(那么实例的属性名必须与配置文件里book.后面的名字一致才能自动map上)
+
+@ConfigurationProperties(prefix="book")
+public class Book {
+    
+    private String name;
+    private String isbn;
+    private String author;
+    private String description;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getIsbn() {
+        return isbn;
+    }
+	......
+}
+
+
+---------------------------------------------多环境配置---------------------------------------------
+我们可以在同一个项目里创建多个配置文件以用来该项目在不同环境中使用。 （比如 同一项目会在DEV/QA/PRODUCTION环境中运行，针对不同环境可以有不同配置文件）
+--通常我们会有一个主文件，若干副文件，不受环境影响的共同部分可以在主文件里配置，其他在不同副文件配置
+--另外可以在主文件里声明启用哪个副文件
+--配置文件格式 application-*.properties(yml)
+
+主文件 （application.properties）
+#目前有三个配置文件，一个主，两个根据环境的副，我们可以在主这里我们来指定启用哪个副的
+spring.profiles.active=dev
+#一些不在乎环境的配置信息可以在主配置文件里配置（无论哪个环境，都无需改变的部分）
+book.name: Harri Potter
+book.isbn: 123123123
+book.author: JKR
+book.description: ${book.name} is a good book
+
+副文件 （application-dev.properties）
+server.port=8888
+#server.context-path=/api
+logging.level.root=WARN 
+logging.level.com.xpy=DEBUG 
+logging.file=logs/my.log 
+
+
+副文件 （application-qa.properties）
+server.port=8889
+#server.context-path=/api
+logging.level.root=WARN 
+logging.level.com.xpy=INFO 
+logging.file=logs/my.log 
+
+--另外我们还可以打包项目，再通过命令行启动项目时来指定启用哪个配置文件
+先把项目通过 mvn package 打包成xxx.jar file
+之后 java -jar xxx.jar --spring-profiles.active=dev (--spring-profiles.active=dev指定启用的配置文件)
+
+
+---------------------------------------------Spring Data JPA---------------------------------------------
+JPA 是一个对象持久化的API，定义了ORM的一个标准。HIBERNATE是一套实现了JPA标准的一个ORM框架。JPA是标准，HIBERNATE根据这个标准做出了一套框架来达成了对象的持久化。
+JPA 是一套标准，一套规范，不是一个产品，更不是一个ORM框架，HIBERNATE才是。我们不能直接使用JPA，使用的是实现了JPA的ORM框架-比如HIBERNATE。
+Spring data jpa 基于JPA进一步简化了数据访问层的实现， 提供了一种类似与声明式的编程方式， 开发者只需要编写数据访问接口（Repository）, Spring Data JPA就能基于接口中的方法命名自动地生成实现。
+
+configuration for JPA,mysql in application.properties
+=====================================================
+#driver
+spring.datasource.driver-class-name=com.mysql.jdbc.Driver
+#server url with encoding method
+spring.datasource.url=jdbc:mysql://localhost:3306/book?useUnicode=true%26characterEncoding=utf-8
+#username
+spring.datasource.username=root
+#password
+spring.datasource.password=root
+#This means once the server starts,加载hibernate的时候， automatically create the table in DB based on the java class with @Entity (这个Entity class 什么结构，在DB里自动生成的表就什么样)
+#create 每次加载 Hibernate ，重新创建数据库表结构，这就是导致数据库表数据丢失的原因。
+#create-drop 加载 Hibernate 时创建，退出是删除表结构
+#update 加载 Hibernate 自动更新数据库结构
+#如果想保留表结构的数据，使用 update 即可
+spring.jpa.hibernate.ddl-auto=create
+#show sql query statement translated from HQL in the log
+spring.jpa.show-sql=true
+
+
+JPA repository 及使用方式
+===================================================
+首先有个class with @Entity to map the table in DB
+之后创建一个 继承 JpaRepository 的 repository,这个repository用来 manipulate 目标 Entity
+public interface BookRepository extends JpaRepository<Book, Long> {
+}
+在这里我们创建了一个 BookRepository 指定了来操作 Book 这个Entity, 并且给出了对应数据库里该表的主键类型
+
+
+
+JPA repository 的一些方法
+===================================================
+save(Object)创建或者更新， 通过该Object的主键判断如果已存在就更新update，不然就创建insert
+findAll() 返回数据库表里所有的内容， 通常返回一个List
+deleteById(id) 通过主键来找到并删除数据库表中的Record
+findById(id).get() 根据主键来找到数据库表中的record之后通过.get()返回该record/object
+
+
+JPA repository 的一些复杂方法
+===================================================
+JPA repository 可以根据方法名字自动生成SQL查询语句，这些方法名字是有规则的，需要naming convention
+比如我们想根据book的作者来查找并返回一本书.在默认的方法中我们没有这个方法，所以我们要自己创建一个。但是为了能好使，我们要遵守它的命名规则。
+在Entity class里author这个variable/attribute 对应数据库book table的author column. 所以我们可以在repository里定义
+public interface BookRepository extends JpaRepository<Book, Long> {
+	public List<Book> findByAuthor(String author);
+}
+
+如果想根据作者和status来查找，follow规则，那么
+public interface BookRepository extends JpaRepository<Book, Long> {
+	public List<Book> findByAuthorAndStatus(String author);
+}
+By什么And什么，这个什么必须要对应Entity Class里的variable/attribute （Entity class里这个variable已经mapping好with数据库里的column不用我们操心了）
+进一步说，如果在Entity class里是author，但在database里的column对应的是 au,他们已经形成了映射关系,知道author就是au，所以这个不用我们管，初期mapping的时候关系已经形成了。
+我们使用的时候按照Entity class里的名字来就好了。
+
+
+JPA repository 自定义查询
+===================================================
+有的时候我们需要很复杂的查询，沿用JPA repository的方法或者规则方法都不行，则我们需要用到自定义方法
+这时我们需要用到@Query注释来告知此方法为一个查询功能，并且给出query的信息
+
+public interface BookRepository extends JpaRepository<Book, Long> {
+
+	@Query("select b from Book b where length(b.name)>?1")
+	public List<Book> findByJPQL(int len);
+}
+
+上面Query的value里， Book是class名， b是实例，？是parameter， 1是代表第一个parameter也就是占位用的
+
+以上是用JPQL（就像HQL）,我们还可以直接使用native SQL statement
+
+public interface BookRepository extends JpaRepository<Book, Long> {
+
+	@Query(value="select * from book where length(b.name)>?1", nativeQuery=true)
+	public List<Book> findByJPQL(int len);
+}
+？1参数占位和参数顺序标识还是要的。我们给出了nativeQuery=true为了告知这是个native sql statement
+
+
+JPA repository 自定义更新
+===================================================
+save()通常用来创建或者更新整个OBJECT或者说整条数据（一个record的所有column），但有时我们需要只更新某条数据的一个column。JPA repository没有针对这个的直接方法
+所以我们需要自定义我们的更新方法
+
+
+public interface BookRepository extends JpaRepository<Book, Long> {
+
+    @Transactional
+    @Modifying
+    @Query("update Book b set b.status=?2 where author=?1")
+    public int updateByJPQL(String author, int status);
+}
+
+之后在service里直接调用这个方法就可以了。
+
+@Transactional
+----------------
+指一个完整的事物，比如一个方法里有对数据库的操作。@Transactional在这的意思是所有的操作算一个完整的事务，要么全成功，要么全失败，一个失败了，其他的全都保持操作前的状态。
+如果第一个发生异常了后面的也就不执行了直接返回失败，如果最后一个操作失败但么前面的操作全部失效同样返回失败。所有操作命令看作一个整体。
+如果没有@Transactional那么成功的会成功进行对数据库操作，失败的就无改变。
+@Transactional 注释在那个方法上也是有讲究的。如果放在上面例子中，他算是个原子事务了，最小的事物了，只有一条事务。
+如果放在service方法上（调用以上方法的方法），并且在这个方法里有很多操作，那么所有的这些操作看作一个整体，并且会覆盖掉（忽略那个原子事务）那个原子事物。
+
+@Transactional里面可以有属性，比如@Transactional(readOnly=true)
+@Transactional(timeout=10)(-1就是没有超时设置一般是默认值)
+
+
+@Modifying
+----------------
+如果进行DML operation必须要用这个注释
+
+
+
+
+
+---------------------------------------------ThymeLeaf 3 与 controller--------------------------------------------
+在pom.xml加入
+		<dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+		
+如果你的spring boot版本老，例如1.5 加入上面依赖后不能自动match最新版本的thymeleaf 3，则我们需要 在POM.XML的properties加上东西
+<properties>
+	<thymeleaf.version>3.0.2.RELEASE</thymeleaf.version>
+	<thymeleaf-layout-dialect.version>2.1.1</thymeleaf-layout-dialect.version>
+</properties>
+
+我们要在application.xxx 里做一些关于thymeleaf的配置，例如
+spring.thymeleaf.mode=HTML
+
+
+
+redirect: 的作用与用法
+===========================================
+如果我们在controller里要返回一个页面用到
+
+return "redirect:/books" 那么就会send request to /books 这个路径，controller里如果有mapping这个路径的方法则该方法就会拦截该请求并执行方法。
+如果不写 redirecgt:, 那么controller默认返回 /books.html这个页面， 而非执行mapping该路径的方法
+
+
+
+Model 的作用与用法
+===========================================
+用法如下（it is just like HttpRequest/HttpResponse in Spring, it has to be used this way in the function as parameter. 
+If you remove it from function parameter and create it inside the function like Model model=new model and then model.addAttribute..... then it NOT works)
+public String getBooks(Model model){
+	
+	List<Book> books=booksService.getBooks();
+	model.addAttribute("books", books);
+	
+	return "books";
+
+}
+Model是request level的 就在当前的好使。
+
+
+
+Flash Attribute的作用与用法
+===========================================
+
+
+
+
+
+----------------------------------------------表单实例构建------------------------------------------------------------
+如果我们在前端有个form提交到服务器，我们有两个方法在controller(服务器端)接收数据
+1 在controller里的方法上在传参处用@RequestParam 一个一个接 form里 input里对应的name值（如name="username", name="password"... username, password就是@RequestParam）,之后存到对象里。
+2 另一个方法就是如果form里的input的name值完全可以对应对象类里的名字，则在controller里的方法里就不用@RequestParam，而可以直接用对象，例如
+<form>
+	<input name="username"></input>
+	<input name="email"></input>
+	<input name="password"></input>
+	<input name="phone"></input>
+</form>
+而且我们有个类是User, 里面有 
+public class User....
+
+String usrename;
+String password;
+String email;
+String phone;
+...
+}
+则在方法里我们可以直接用
+
+@PostMapping("/addUser")
+public String addUser(User user){
+
+	User newUser=user;
+	.......
+}
+
+当你传user时， 它就一一对应form里input的所对应的name的值了
+
+
+
+
+
+----------------------------------------------表单数据传输------------------------------------------------------------
+有的时候表单比较复杂可能会有很多内容，不能如上面一样和对象完全一一对应。（比如表单里有20几个input，对象只有10个attributes），这时我们如果用@RequestParam从表单拿数据，那得写20几个parameters在method里
+之后把需要的放到对象里，太鸡巴傻逼了。我们还是要想办法直接用对象传参。
+我们要新写个class,里面完全对应表单里input的内容， 比如
+里面可以放所有表单里的input内容
+public class UserForm{
+	String username;
+	String phone;
+	...
+	String hobby;
+
+}
+
+这样在controller里面我们不但可以添加逻辑验证，检查数据，并针对性的把数据放到业务层所需的对象里
+
+@PostMapping("/xxx")
+public String register(UserForm userForm){
+	User user=new User();
+	user.setUsername(userForm.getUsername());
+	user.setPhone(userForm.getPhone());
+	.....
+	return "xxx";
+
+}
+
+此时我们又发现，一项一项把User所需的数据从userForm里拿出来，也是很麻烦，所以我们可以
+
+
+BeanUtils.copyProperties(sourceObject, destOjbect);
+==================================================
+@PostMapping("/xxx")
+public String register(UserForm userForm){
+	User user=new User();
+	BeanUtils.copyProperties(userForm, user);
+	.....
+	return "xxx";
+
+}
+这样我们就可以复制 userForm里能和user里对应得上的数据
+
+
+
+----------------------------------------------表单数据验证------------------------------------------------------------
+如果我们从前端表单拿到所提交的数据后做一下数据验证（是不是空啊，是不是数字啊，长度啊。。。。）， 我们可以通过注解的方式来完成
+如上述我们提交的表单和UserForm这个对象呼应，所以我们可以在Userfrom class里通过注解来验证
+
+public class UserForm{
+	
+	@NotBlank
+	String username;
+	
+	@Pattern(regexp="")
+	String phone;
+	
+	@Email
+	String email;
+	
+	@Length(min=6)
+	String password;
+	
+	...
+	String hobby;
+
+}
+完成上面的注解后，我们还要告诉controller拿到所提交的表单后要通过上述的注解来进行验证，并拿到验证结果
+
+
+@Valid
+=========================================================
+BindingResult
+=========================================================
+
+@PostMapping("/xxx")
+public String register(@Valid UserForm userForm， BindingResult result){
+	//判断是否有错
+	if(result.hasError()){
+		//如果有错拿到错误都信息
+		List<FieldError> fieldErrors=result.getFieldErrors();
+		//打出错误
+		for(FieldError error: fieldErrors){//getField()是拿到错误的field哪个
+			System.out.println(error.getField()+" : "+error.getDefaultMessage()+" : "+error.getCode());
+		}
+	}
+	
+	User user=new User();
+	BeanUtils.copyProperties(userForm, user);
+	.....
+	return "xxx";
+
+}
+通过@Valid这样一旦从客户端拿到表单，就要去指定的对象class里根据找定义好的标准去验证.
+通过BindingResult来获取验证结果
+
+我们还可以手动的往result里面加入自定义的信息，比如
+
+public String register(@Valid UserForm userForm， BindingResult result){
+	if(xxx){
+	  result.rejectValue("filedname", "code", "message" )
+	}
+
+	//判断是否有错
+	if(result.hasError()){
+		//如果有错拿到错误都信息
+		List<FieldError> fieldErrors=result.getFieldErrors();
+		//打出错误
+		for(FieldError error: fieldErrors){//getField()是拿到错误的field哪个
+			System.out.println(error.getField()+" : "+error.getDefaultMessage()+" : "+error.getCode());
+		}
+	}
+	
+	User user=new User();
+	BeanUtils.copyProperties(userForm, user);
+	.....
+	return "xxx";
+
+}
+
+
+
+----------------------------------------------异常处理-通过HTTP状态码----------------------------------------------------------
+
+
+
+----------------------------------------------异常处理-异常发生在某个controller-------------------------------------------------
+
+
+
+---------------------------------------------------异常处理-异常发生在全局------------------------------------------------------
+
+
+---------------------------------------------------LOG------------------------------------------------------
+Logback是新一代的日之框架，支持SLF4J
+level: error, warn, info, debug 级别由高到低， 如果使用低级别的，则也包含了它以上的级别。
+
+
+设定日志的范围和级别
+=======================================
+logging.level.root: debug #server端的日志级别
+logging.level.org.springframework.we: debug #spring framework的日志级别
+logging.level.com.xpy.web: debug #自定义某个地方的日志级别
+
+
+
+设定日志的输出目录和文件
+=======================================
+logging.level.root: debug   #server端的日志级别
+logging.file: devlog/my.log #用相对路径（针对于整个project的相对路径）
+logging.file: C:/Users/pxiao/xxxx/my.log  #这是绝对路径的用法，指定到电脑里任意一个地方
+
+
+
+设定日志切分
+=======================================
+默认是日志是按大小来切分的，默认是10M， 如果超过10M，就自动切分。如 my0.log, my1.log...
+如果自定义设置切分，我们需要一个配置log的文件，这个文件的命名规则是：
+logging.config: classpath:logback.xml (或者logback-spring.xml) #告知log配置文件所在地
+在这个.xml文件里这样配置： (先去网上找一个template, 之后在里面修改)
+
+<rollingPolicy class="xxx.....TimeBasedRollingPolicy">
+	<fileNamePatter>${LOG_FILE}.%d{yyyy-MM-dd}.%i</fileNamePattern>
+	<maxHistory>365</maxHistory> <!--保留日志一年时间-->
+	
+	<!--在按照时间的切分的情况下也根据大小再进行2次切分，也就是说同一天的日志可根据大小再切分-->
+	<timeBasedFileNamingAndTriggeringPolicy class="xxxxx.xxxx.SizeAndTimeBasedFNATP">
+		<maxFileSize>100MB</maxFileSize>
+	</timeBasedFileNamingAndTriggeringPolicy>
+</rollingPolicy>
+
+
+
+
+设定日志的输出格式
+=======================================
+logging.pattern.console: 时间+classname+行数+...... (%d{HH:mm:ss.SSS} %contextName [%thread] %-5level %logger{36} - %msg%n)
+
+
+
+设定日志的分类
+=======================================
+如果我们想有些内容输出到server.log, 有些到spring.log, 有些到hibernate.log, 有些到application.log
+那么我们可以在上面那个.xml文件里进行配置，指定log名字，切分方式，出处
+1 先定义appender, 给log appender名字，format,log file名字，切分方式，等
+2 再定义logger， 给出对应的appender, level,和出处(从那些包产生log)。
+
+
+
+
+
+---------------------------------------------------AOP面向切面编程-----------------------------------------------------
+AOP通过给程序定义一个切入点，然后再其前后切入不同的执行内容，并且不会破坏原来的程序逻辑
+AOP一般用于，log, 事务管理， 安全检查（权限啊什么的）， 资源控制（数据库，文件等资源打开或关闭等）
+
+
+
+@Aspect
+=======================================
+通过@Aspect注释来定义该class为一个Aspect class,可以切入到其他程序执行内容，但不会破坏原有的业务逻辑。
+
+
+@Pointcut("execution(* com.xpy.api)")
+=======================================
+@Pointcut是定义切入点，用来注释在方法上。告诉在哪个点切入进去。
+execution(* com.xpy.api)，括号里面的内容可以是一个包，可以是个类，甚至可以具体到某一个方法。如果是方法，那么在arguments处填".."意为任何arguments的情况下，不然可以指定某种argument.
+例如 @Pointcut("execution(* com.xpy.api.Authentication.submit(..))"), submit为方法名，参数为任意参数".."，Authentication为类名。总之可以非常具体。
+
+例子：
+@Aspect
+@Component
+public class LogAspect{
+
+private final Logger logger=LoggerFactory.getLogger(this.getClass());
+
+@Pointcut("execution(* com.xpy.api.LogTestApi.log(..))")
+public void myLog(){
+
+}
+
+@Before("myLog()") //在执行 com.xpy.api.LogTestApi.log()，这个方法的时候切入，在执行com.xpy.api.LogTestApi.log()前执行 doBefore（）/
+public void doBefore(){
+	logger.info("do something");
+}
+
+@After("myLog()") //在执行 com.xpy.api.LogTestApi.log()之后, 之后执行doAfter（）
+public void doAfter(){
+	logger.info("do something");
+}
+
+//@AfterReturning意为在切入点方法com.xpy.api.LogTestApi.log()执行返回后，拿到其返回值，并且再执行doAfterReturning（）这个方法
+@AfterReturning(returning="result", pointcut="myLog()") //
+public void doAfterReturning(Object result){
+
+	logger.info("get the return value: "+result.toString(););
+}
+
+
+
+
+
+
+
+---------------------------------------------------AOP统一记录日志-----------------------------------------------------
+通过AOP统一记录日志，我们就不需要在每一个class里来单独进行设置
+例子：
+
+@Aspect
+@Component
+public class LogAspect{
+
+private final Logger logger=LoggerFactory.getLogger(this.getClass());
+
+@Pointcut("execution(* com.xpy.api.*.*(..))")//意为在com.xpy.api这个包下任意的class，任意的方法里，不管参数是什么的情况下切入。
+ public void log() {
+    }
+
+    @Before("log()")
+    public void doBefore(JoinPoint joinPoint) {//这个jointPoint用来在切入的时候获取当时切入的信息
+	    //通过ServletRequestAttributes创建httpRequest, 通过其来获取http request相关的information
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        HttpServletRequest request = attributes.getRequest();
+		//以下通过jointPoint来获取class和method相关的information
+        String classMethod = joinPoint.getSignature().getDeclaringTypeName() + "." + joinPoint.getSignature().getName();
+        ReqeustLog reqeustLog = new ReqeustLog(
+                request.getRequestURL().toString(),
+                request.getRemoteAddr(),
+                classMethod,
+                joinPoint.getArgs()
+        );
+        logger.info("Rquest  ----- {}",reqeustLog);
+    }
+
+    @After("log()")
+    public void doAfter() {
+        //logger.info("---------- doAfter 2 ----------");
+    }
+
+
+    @AfterReturning(returning = "result",pointcut = "log()")
+    public void doAtfertRturning(Object result) {
+        logger.info("Return ------ {}",result );
+    }
+
+
+    private class ReqeustLog {
+        private String url; //用来记录当前URL
+        private String ip;  
+        private String classMethod; //用来记录当前方法名
+        private Object[] args; //用来记录当前方法参数
+
+        public ReqeustLog(String url, String ip, String classMethod, Object[] args) {
+            this.url = url;
+            this.ip = ip;
+            this.classMethod = classMethod;
+            this.args = args;
+        }
+
+        @Override
+        public String toString() {
+            return "ReqeustLog{" +
+                    "url='" + url + '\'' +
+                    ", ip='" + ip + '\'' +
+                    ", classMethod='" + classMethod + '\'' +
+                    ", args=" + Arrays.toString(args) +
+                    '}';
+        }
+    }
+
+
+
+
+
+
+
+
+---------------------------------------------------拦截器 interceptor-----------------------------------------------------
+拦截器可以做两个事情
+1 预处理 在到controller之前处理
+2 后处理 在处理完请求controller分发servlet之前进行处理
+
+使用步骤
+1 实现拦截器
+2 注册拦截器
+
+
+
+
+1 实现拦截器 HandlerInterceptorAdapter实现了HandlerInterceptor, 该类继承了HandlerInterceptorAdapter从而也就实现了HandlerInterceptor
+public class LoginInterceptor extends HandlerInterceptorAdapter{
+
+	public boolean preHandle(HeepServletRequest request,
+							 HttpServletResponse response,
+							 Object handler) throws Exception{
+					
+        //以下假设看user是否login了					
+		if(request.getSession().getAttribute("user")==null){
+			response.sendRedirect("/login");
+			return false;
+		}
+		
+		return true;
+	
+	
+	}
+
+
+
+}
+
+HandlerInterceptor里的三个方法
+=====================================================
+预处理回调方法，实现处理器的预处理
+第三个参数为响应的处理器，即controller
+返回true, 表示继续流程，调用下一个拦截器或者处理器
+返回false, 标识流程中断，通过Response产生响应
+boolean preHandle(HttpServletRequest request,
+				  HttpServletResponse response,
+				  Object handler) throws Exception;
+				  
+
+
+后处理回调方法，也就是Controller方法调用之后视图返回之前执行
+可以通过modelAndView对模型数据进行处理或对视图进行处理				  
+boolean postHandle(HttpServletRequest request,
+				  HttpServletResponse response,
+				  Object handler, ModelAndView modelAndView) throws Exception;
+				  
+
+
+整个请求结束之后， DispatcherServlet渲染了对应的视图完成之后执行
+通常用于进行资源清理工作（remove attributes, session close等）				  
+boolean afterCompletion(HttpServletRequest request,
+				  HttpServletResponse response,
+				  Object handler) throws Exception;
+
+
+
+
+2 注册拦截器(除了以下方法，应该还可以在web.xml里注册)
+@Configuration
+public class WebConfig extends WebMvnConfigurerAdapter{
+
+	public void addInterceptors(InterceptorRegistry registry){
+		registry.addInterceptor(new LoginInterceptor()).addPathPatterns("/**").excludePatchPatterns("/","/login");
+	
+	}
+
+
+}
+
+
+
+
+
+
+
+
+
+------------------------------------------------------More about JPA---------------------------------------------------------
+分页与排序
+============================================
+Sort sort=new Sort(Sort.Direction.DESC, "id")//排序的方式，以哪个column排序
+Pageable pageable=new PageRequest(0, 100, sort);//第一个参数为第几页，第二个参数为每页多少个results
+Page<Book> page=authorRepository.findAll(pageable);
+
+
+如果不想分页，只想排序
+public List<Book> findAll() {
+    return authorRepository.findAll(sortByIdAsc());
+}
+
+private Sort sortByIdAsc() {
+    return new Sort(Sort.Direction.ASC, "id");
+}
+
+
+more example of sorting
+public interface EmployeeRepository extends CrudRepository<Employee, Long> {
+
+  public List<Employee> findByDept(String deptName, Sort sort);
+}
+@Autowired
+EmployeeRepository repo;
+List<Employee> list = repo.findByDept("Sales", Sort.by("salary", "name").ascending());
+
+
+如果分页和排序的请求直接从http request来可以这样在controller里设置
+@GetMapping //如果没有特别设定，会按照以下@PageableDefault里的内容来进行分页和排序，如果有设定 如 http"//xxx.com/book?page=0%26size=100%26sort=id,desc，则按照这个来
+public Object findAuthor(@PageableDefault(page=0, size=100, sort={"id"}, direction=Sort.Direction.DESC)){
+	...
+}
+
+
+
+一对一
+============================================
+直接上列子少废话
+@Entity
+public class Author{
+	@Id
+	@GeneratedValue
+	private Long id;
+	private String name;
+	
+	@OneToOne (cascade=CascadeType.PERSIST)
+	@JoinColumn(name="author_wallet_id") //这行是optional的根据需要来
+	private Wallet wallet; //Author是关系维护者，wallet是关系被维护者。那个外键在哪个表里，该表就是维护者。
+	                       //如果我们想保存Author Object的时候还同时保存Wallet,那么我们需要设置级联 cascade=CascadeType.PERSIST
+	
+}
+以上如果保存一个Auhor对象， wallet的对象也会保存（如果有级联保存），自动会在author table里生成一个外键wallet_id来关联wallet。
+如果你想自定义这个外键wallet_id的名字，则需要进一步设置
+@JoinColumn(name="author_wallet_id")
+还可以指定关联另一个表里哪个column作为外键
+@JoinColumn(name="author_wallet_id", referencedColumnName="balance")
+
+
+
+保存
+public void saveAuthor(){
+	Author author=new Author();
+	author.setName("xx");
+	author.setWallet(new Wallet(new BigDecimal(99.99)));
+	
+	authorRepository.save(author); //author在DB里生成的同时，wallet也会相应的生成
+}
+
+更新
+public void updateAuthor(){
+	Author author=authorRepository.findAuthor(1);
+	Wallet wallet = author.getWallet();
+	wallet.setBalance(100.00);
+	author.setWallet(wallet); //需要设置级联更新
+
+	
+	authorRepository.update(author);
+
+}
+
+查询
+查询无需做任何级联的设置，只要定义了一对一，拿该对象的时候自动就会把维护的对象拿到
+
+
+
+
+
+双向关联
+同时我们还可以在Wallet里面同时关联Author
+@Entity
+public class Wallet{
+
+@Id
+@GeneratedValue
+private Long id;
+
+@OneToOne(mappedBy="wallet")    //如果进行了双向关联，这个时候我们要告诉哪边是维护者哪边是被维护者，用 mappedBy="wallet",来说明Wallet方是被维护者.
+								//mappedBy=的值是Author class里那个Wallet对象的名字
+private Author author;
+
+}
+不一定需要双向关联，根据业务需求来。
+
+
+
+
+
+
+一对多与多对一
+============================================
+@Entity
+public class Article{
+	@Id
+	@GeneratedValue
+	private Long id;
+	private String name;
+	
+	@OneToMany(mappedBy="article"，cascade={CascadeType.PERSIST, CascadeType.REMOVE})   //这个class是关系被维护方，一对多，一是被维护方。所以用mappedBy,value是Comment class里的那个article属性对象的名字，名字一定要对上。
+	private List<Comment> comments;
+	
+	...
+	
+}
+
+
+
+@Entity
+public class Comment{
+	@Id
+	@GeneratedValue
+	private Long id;
+	private String content;
+	
+	@ManyToOne //one to many or many to one, 多的那个class是维护方，one的那个是被维护方，也就是article id会出现在comment表里
+	private Article article                 
+	
+	...
+	
+}
+one to many or many to one, 多的那方是维护方，one的那方是被维护方，也就是article id会出现在comment表里
+
+
+有一种情况当你想删除comment的时候用JPA默认删除方法删除不了， 因为在comment的record里关联着article(article_id). JPA认为有关系存在所以不应该删除
+可以用两种方法删除
+1 暴力删除，把数据库砸毁。 通过JPQL语句来删除。不演示了，就是在repository里创建一个新的删除方法，用jpql语句来操作。
+2 接触关系，再删除
+
+commentRepository.deleteBy(id); //删除不了
+//下面来解除关系
+Comment comment=commentRepository.findOne(id);
+List<Comment> comments = comment.getArticle().getComments();
+for(Comment comment1: comments){
+	if(id==comment1.getId()){
+		comments.remove(comment1);
+		break;
+	}
+
+	commentRepository.deleteBy(id);//这次就可以删除了
+
+}
+
+同理我们可以简化以上步骤，在comment的class里进行操作来解除关系
+@Entity
+public class Comment{
+	@Id
+	@GeneratedValue
+	private Long id;
+	private String content;
+	
+	@ManyToOne
+	private Article article      
+
+	//这样就解除关系了，删除comment前先call这个方法就好了
+	public void clearComment(){	
+		this.getArticle().getComments().remove(this);
+	}
+	
+	...
+	
+}
+
+
+
+
+
+多对多
+============================================
+多对多谁是维护方谁是被维护方要根据具体业务需求来
+多对多的时候在DB里需要有另外一张关系表如 topic_article来记录topic和article的关系
+我们可以在Class里面指定哪张表是关系表
+
+@Entity
+public class Article{
+	@Id
+	@GeneratedValue
+	private Long id;
+	private String name;
+	
+	@ManyToMany
+	private List<Topic> topics;
+	
+	...
+	
+}
+
+
+@Entity
+public class Topic{
+	@Id
+	@GeneratedValue
+	private Long id;
+	private String name;
+	
+	@ManyToMany
+	@JoinTable(
+				name="topic_article",
+				joinColumn=@JoinColumn(name="topic_id", referencedColumnName="id"), 前者是关系表里那个column的名字，后者是自身表里的column的名字
+				inverseJoinColumns=@JoinColumn(name="article_id", referencedColumnName="id") //关系被维护方的关联设置
+			  )
+	private List<Article> articles;
+	
+	...
+	
+}
+
+
+如何取消两个对象的关联, 如果在一个事务里进行操作就会取消关联， 如果不在一个事务里面就不好使。
+
+@Transactional
+public Topic unIncludeArticle(Long articleId, Long topicId){
+	Topic topic =topicRepository.findOne(topicId);
+	Article article=articleRepository.findOne(articleId);
+	topic.getArticles().remove(article);
+	
+	return topic;
+}
+
+
+多对多删除，如果删除的是关系维护方，那么可以删除，而且被维护方也会一起在那个关系维护表里被删除。如果删除的是被维护方，则删不掉，必须要先解除关系才能被删掉。
+
+
+
+
+
+
+属性
+============================================
+cascade=CascadeType.PERSIST //级联更新
+cascade=CascadeType.REMOVE //级联删除
+cascade=CascadeType.MERGE //级联更新
+optional=false //是否为空
+fetch=FetchType.LAZY（EAGER）    //什么获取对象的值
+
+
+
+
+
+fetch=FetchType.LAZY vs fetch=FetchType.EAGER
+============================================
+如果不主动配置，默认是LAZY
+EAGER 初始化的时候就把值拿到了
+LAZY  只有运行getxxx()时才会去拿那个值
+如果用LAZY，要转化一个object为json string， 这时会报错。因为转化过程中尝试运行getXXX()方法去拿值，但是这个时候的JPA的session已经关闭了拿不到所以出错。
+两个方法解决以上方法
+1 change to EAGER
+2 在session关闭之前获取。@Transactional那个方法结束之前获取。 可以在@Transactional的那个方法里面获取。
+
+
+
+
+
+
+---------------------------------------------测试--------------------------------------------
+在src里面和main平级，创建一个test folder, src/test/java/包名/Test Class. Spring boot就知道这是测试文件， class 可以运行来进行测试（无需main function）。
+在class里的上面放上注释
+@Run(SpringRunner.class)
+@SpringBootTest在class里
+
+在method上放上注释
+@Test
+之后该写啥写啥
+
+运行这个class就会像运行main()的class那样了开始执行测试了
+
+
+
+
+
+
+
+
+
+---------------------------------------------Internationalization--------------------------------------------
+如果我们要同一个API根据request的情况返回不同的语言
+如果内容存在.properties file
+
+1 create multiple message properties file for different languages content
+  ex. message.properties       English
+      message_fr.properties    French
+	  
+2 在spring runner class 里面，就是自动生成的包含main function的那个class里，有@SpringBootApplication这个注解的那个class里
+ 
+    @Bean //method名字一定要和使用这个对象的时候的那个@Autowired的名字对上。对上这个method的return对象名字没用。
+          //一定得失方法名字
+		public ResourceBundleMessageSource messageSource(){
+
+			ResourceBundleMessageSource messageSource=new ResourceBundleMessageSource();
+
+			messageSource.setBasename("message"); //设定要查找开头为 message的 properties的files
+			return messageSource;
+		}
+
+    这个方法我们创建一个 ResourceBundleMessageSource, 用来处理开头为 message的 properties的files
+	
+	
+	还有一个方法来用来做上面的事情
+	
+	在application.properties file里 
+	spring.messages.basename=message #这样就知道message的basename是什么了，怎么找了。就不需要上面的方法了。
+	
+	
+	
+3 在controller里面通过ResourceBundleMessageSource来在message properties获取相应内容。
+  我们要@Autowired ResourceBundleMessageSource对象，这个对象名字一定是要和step2里的那个带@Bean注释的方法名一样，in this case - messageSouce
+
+@RestController
+@RequestMapping("/api")
+public class HelloWorldController {
+
+    @Autowired
+    MessageSource messageSource;
+
+    @GetMapping("/hello")  //这个参数来告诉，locale要通过 request header的 Accept-Language来传入。如果在header里没有这个值，默认用US。message.properties, 这个没有特别标注语言的就是默认是for US的。
+                           //如果Accept-Language的值是fr，则自动找到message_fr.properties，打开，去拿"hello.message"的值
+	public String sayHello(@RequestHeader(name="Accept-Language", required=false) Locale locale){
+		//messageSource bean已经设定好去找开头为 message的properties file。
+		//在加上reqeust header传过来的locale，就知道去找哪个个开头为 message*.properties files。如果是locale是fr,则找 message_fr.properties
+		//进入file,拿key为hello.message的值，并返回这个值
+        return messageSource.getMessage("hello.message", null, locale);
+        //return "hello world";
+    }
+
+}
+
+上面的方法有一个问题就是如果很多方法都需要Internationalization则需要在很多方法上加上@RequestHeader(name="Accept-Language", required=false) Locale locale
+这样一来就累逼了。所以我们可以这么做，让spring给你提供方便-无需特意给出在什么地方拿这个值
+public String sayHello(){
+		//但这个值，在request里还是要有，没有哪知道到你要什么语言。还是要在Request里给出。
+		//我估摸着这个LocalContextHolder.getLocale()就是去所有有可能传locale的地方去找，找到了就拿。
+        return messageSource.getMessage("hello.message", null, LocalContextHolder.getLocale()));
+    
+    }
+
+	
+	
+	
+	
+	
+---------------------------------------------XML format 输出--------------------------------------------	
+在pom.xml里可以引入第三方包来达到此目的，比如 jackson
+fastJson is fast但是不支持xml转换，还得用jackson,功能全
+
+
+
+
+
+
+---------------------------------------------Swagger documentation generation--------------------------------------------	
+Swagger documentation generation
+======================================
+SOAP我们有WSDL,所以我们知道request/response是什么样，什么样的协议，哪些是必须的那些是可选的。但是REST没有这玩意。我们接下来看REST
+如何能生成 documentation,我们通过swagger来做
+在pom.xml里加上
+		dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>xxx/version>
+        </dependency>
+
+		<!--this is for swagger ui-->
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+            <version>xxx</version>
+        </dependency>
+
+我们需要创建一个Swagger configuration class 
+@Configuration //configuration
+@EnableSwagger2 //enable swagger
+public class SwaggerConfig {
+
+    //Bean - Docket
+    @Bean
+    public Docket api(){
+        return new Docket(DocumentationType.SWAGGER_2)
+                   .select()
+                   .apis(RequestHandlerSelectors.any()) //all the api you want to put in the documentation
+                   .paths(PathSelectors.any()) //all the paths you want to put in the documentation
+                   .build();
+    }
+
+}
+
+
+more example:
+	@Bean
+    public Docket fooV1Api() {
+        return new Docket(DocumentationType.SWAGGER_2)
+            .select()
+            .apis(RequestHandlerSelectors.any())
+            .paths(PathSelectors.regex("/v1/.*"))                
+            .build()
+            .apiInfo(new ApiInfo("Foo Rest API","Foo REST API","v1","","","",""))
+            .pathMapping(SLASH_API);
+    }
+
+
+
+
+
+
+Swagger 2 is enabled through the @EnableSwagger2 annotation.
+
+After the Docket bean is defined, its select() method returns an instance of ApiSelectorBuilder, 
+which provides a way to control the endpoints exposed by Swagger.
+
+Predicates for selection of RequestHandlers can be configured with the help of RequestHandlerSelectors and PathSelectors. 
+Using any() for both will make documentation for your entire API available through Swagger.
+
+This configuration is enough to integrate Swagger 2 into existing Spring Boot project. 
+For other Spring projects, some additional tuning is required.
+
+之后生成了documentation
+http://localhost:8888/v2/api-docs (/v2是固定的必需的) 去访问
+http://localhost:8888/swagger-ui.html 这个是通过swagger ui来访问
+
+
+Swagger documentation customization
+==============================================
+.apiInfo("Test API","Foo REST API","v1","meisha","nidaye","123","123.com")   //通过这个可以设定API DOC里 info那部分的信息。 给出api的相关信息，api名字，联系人什么的。
+.produces(new HashSet(Arrays.asList("application/json", "application/xml")))    //通过这个设置produce什么类型的service, 比如 application/json, application/xml
+.consumes(new HashSet(Arrays.asList("application/json", "application/xml")))    //通过这个设置consume什么类型的service, 比如 application/json, application/xml
+
+如果我们有个api, 发送值或者返回值是Person object， 并且我们需要对Person某些fields需要特殊备注我们可以. 这样做完在api doc里关于这个fields的description就可以看见这些备注信息。
+
+@ApiModel("all about person")
+class Person(){
+
+    @ApiModelProperties("this value should be in the past") 
+	Date birthDay;
+	
+	@ApiModelProperties("Should be more than 2 characters") 
+	String name;
+	
+
+
+}
+
+查看swagger-annotations...jar去学习更多的关于swagger的注释。
+还有更多的东西可以设置，更多的注解可以使用，在这就不一一说了，没头。 至少我们知道如果要个性化设定的话，大概在什么地方弄，如果查找documentation去那找，找什么，都有个方向了。
+
+
+
+
+
+---------------------------------------------Actuator API Monitoring--------------------------------------------
+To monitor REST API services, we import two dependecies in the pom.xml
+		<dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-rest-hal-browser</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+how to check monitor information?
+=========================================
+As default, if we go to http://localhost:8080/actuator, you can see the urls for getting different monitoring information, such as 
+http://localhost:8080/actuator
+http://localhost:8080/actuator/health
+http://localhost:8080/actuator/info
+
+Also we need to put more configuration in the application.properties file
+#enable web exposure, more like we are auditing the traffic. If you monitor everything then mmy result in the performance issue.
+management.endpoints.web.exposure.include=*
+
+once you add above to application.properties, then in http://localhost:8080/actuator, you can see more urls for more information
+
+
+Use Hal browser to check the information
+==========================================
+go to http://localhost:8080/browser/index.html#/, you'll get UI page.
+in the Exploer part, you can input the url in http://localhost:8080/actuator, and see more detailed and well formatted information
+such as, you put "/actuator" (you do not need to input root part url), then list all the sub categories information about actuator
+if you click "metrics", the url in the EXploer input field will auto change to "http://localhost:8080/actuator/metrics"
+then it shows you what can you check for metrics at the right side. Just copy something like "jvm.memory.used" and paste/append to the urls
+in the Exploer field "http://localhost:8080/actuator/metrics/jvm.memory.used" and click "Go!", then you get the memory is being used currently.
+
+If you want to know more about the actuator, please read the documentation.
+
+
+
+
+------------------------------------------------Static Filter-----------------------------------------------
+这里直接举例，比如我们要返回json形式一个的实例，但是想隐藏实例里部分attribute信息。我们可以这么做。
+
+controller里
+
+@RestController
+public class FilteringController {
+
+    @GetMapping("/filtering")
+    public SomeBean retrieveSomeBean(){
+
+        return new SomeBean("value1", "value2", "value3");
+    }
+
+
+    @GetMapping("/filtering-list")
+    public List<SomeBean> retrieveListSomeBean(){
+
+        return Arrays.asList(new SomeBean("value1", "value2", "value3"), new SomeBean("1", "2", "3"));
+    }
+
+}
+
+
+实例
+
+public class SomeBean {
+
+    private String f1;
+    private String f2;
+
+    @JsonIgnore
+    private String f3;
+    public SomeBean(String value1, String value2, String value3) {
+        this.f1=value1;
+        this.f2=value2;
+        this.f3=value3;
+    }
+	
+	...
+	
+	getter and setter
+}
+
+返回结果：
+xxxx:xxxx/filtering
+[{"f1":"value1","f2":"value2"}]
+
+xxxx:xxxx/filtering-list
+[{"f1":"value1","f2":"value2"},{"f1":"1","f2":"2"}]
+
+
+@JsonIgnore
+=========================
+我们通过使用@JsonIgnore这个annotation定义在实例class里某个attribute variable上，来告知这个attribute不会在返回值中(如果返回形式是json形式的话)
+
+
+@JsonIgnoreProperties
+=========================
+我们还可以这么做，如果一次定义多个值需要被忽略. 我不喜欢这个方式，因为这方式需要hard-code attribute name.
+
+@JsonIgnoreProperties(value={"f1", "f2"})
+public class SomeBean {
+
+    private String f1;
+    private String f2;
+
+    @JsonIgnore
+    private String f3;
+    public SomeBean(String value1, String value2, String value3) {
+        this.f1=value1;
+        this.f2=value2;
+        this.f3=value3;
+    }
+	
+	...
+	
+	getter and setter
+}
+
+
+
+
+
+------------------------------------------------Dynamic Filter-----------------------------------------------
+和static filter不同之处是,static filter预定义了要filter的值。Dynamic filter, 更灵活，可以根据不同的情况，不同的scenarios来filtering,
+比如如下，我想在一个request(retrieveSomeBean())里filter一些value, 在另个一个request(retrieveListSomeBean)里filter另一些value. 
+
+@RestController
+public class FilteringController {
+
+    @GetMapping("/filtering")
+    public MappingJacksonValue retrieveSomeBean(){
+        SomeBean someBean=new SomeBean("value1", "value2", "value3");
+		
+		//create a filter, and tell it what we want to filter it out
+        SimpleBeanPropertyFilter filter=SimpleBeanPropertyFilter.filterOutAllExcept("f1");
+		
+		//add the above filter to filter provider 
+		//and tell filter provider what's the class this filter assocaited with
+        FilterProvider filters=new SimpleFilterProvider().addFilter("SomeBeanFilter", filter);
+		
+		//tell which bean/object we want to map with for using filter
+        MappingJacksonValue mapping = new MappingJacksonValue(someBean);
+		
+		//set the filter
+        mapping.setFilters(filters);
+	
+	    //have to return mapping object(the object proccessed filter for the bean)
+        return mapping;
+    }
+	
+	
+	@GetMapping("/filtering-list")
+    public MappingJacksonValue retrieveListSomeBean(){
+
+        List<SomeBean> list= Arrays.asList(new SomeBean("value1", "value2", "value3"), new SomeBean("1", "2", "3"));
+
+        SimpleBeanPropertyFilter filter=SimpleBeanPropertyFilter.filterOutAllExcept("f2", "f3");
+        FilterProvider filters=new SimpleFilterProvider().addFilter("SomeBeanFilter", filter);
+
+        MappingJacksonValue mapping = new MappingJacksonValue(list);
+        mapping.setFilters(filters);
+
+        return mapping;
+
+
+    }
+
+}
+
+
+在bean class里我们要在class level给上@JsonFilter注解来对应上面controller class里 FilterProvider加进去的filter的名字。
+而且这个名字一定要和上面的对上，不然上面的就不知道那个filter所对应的类了
+
+@JsonFilter("SomeBeanFilter")
+public class SomeBean {
+
+    private String f1;
+    private String f2;
+    private String f3;
+    public SomeBean(String value1, String value2, String value3) {
+        this.f1=value1;
+        this.f2=value2;
+        this.f3=value3;
+    }
+}
+
+
+
+@JsonFilter("name")
+======================================
+通常用在 bean class上来告知这个class有filter
+
+
+
+
+
+
+
+------------------------------------------------Versioning-----------------------------------------------
+如果我们对同样的请求有不同版本的处理和返回结果的话，可以通过versioning来操作。
+如果我们在controller里有两个方法，mapping的路径一样，也是做一样的事情， 但是版本不一样（返回结果不一样）。
+
+方法一 request parameter versioning
+通过request query string parameter
+==================================
+
+@RestController
+public class PersonVersioningController {
+
+    @GetMapping(value="/person/param", params="version=1")
+    public PersonV1 paramV1(){
+
+        return new PersonV1("Bob Charlie");
+    }
+
+    @GetMapping(value="/person/param", params="version=2")
+    public PersonV2 paramV2(){
+
+        return new PersonV2(new Name("Bob"," Charlie"));
+    }
+}
+
+如果我们call 
+http://localhost:8888/person/param?version=1 返回PersonV1 object
+http://localhost:8888/person/param?version=2 返回PersonV2 object
+
+这样根据HTTP REQUEST上的不同版本参数，可以返回不同版本的结果
+
+
+
+方法二 header versioning
+通过http header(when send request put X-API-VERSION/1 as key/value pair in header)
+==================================================================================
+
+@RestController
+public class PersonVersioningController {
+
+    @GetMapping(value="/person/header", headers="X-API-VERSION=1")
+    public PersonV1 headerV1(){
+
+        return new PersonV1("Bob Charlie");
+    }
+
+    @GetMapping(value="/person/header", headers="X-API-VERSION=2")
+    public PersonV2 headerV2(){
+
+        return new PersonV2(new Name("Bob"," Charlie"));
+    }
+}
+
+
+方法三 accept type versioning
+通过produces(when send request put accept/my.api-v1+json as key/value pair in header)
+==============================================================================================================
+
+@RestController
+public class PersonVersioningController {
+
+    @GetMapping(value="/person/produces", produces="application/my.api-v1+json")
+    public PersonV1 producesV1(){
+
+        return new PersonV1("Bob Charlie");
+    }
+
+    @GetMapping(value="/person/produces", headers="application/my.api-v1+json")
+    public PersonV2 producesV2(){
+
+        return new PersonV2(new Name("Bob"," Charlie"));
+    }
+}
+
+
+
+
+方法四 URI versioning
+不同的version通过不同的URL来进行访问
+==============================================================================================================
+比如
+http://localhost:8888/person/v1 返回PersonV1 object
+http://localhost:8888/person/v2 返回PersonV2 object
+
+其实这个和方法一大致相同，因为request parameter也是URL的一部分。
+
+
+方法二和方法三如果是纯用browser来访问的话，则实现不了，因为没地方设置header信息。但方法一和方法二可以。
+
+
+
+
+------------------------------------------------Spring Security-----------------------------------------------
+有一种情况，你不希望任何人都能访问你的API,所以你需要进行对请求者的身份验证，或者让他们提交一个验证码（密匙）来确定API使用权。我们可以使用spring security来做这个事
+add following dependency to the pom.xml
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+重启server的时候在log里会有
+Using generated security password: 7bc83738-313e-4525-acf2-67d7277c2e31
+这个是spring security默认情况下生成的密匙，每次重启server这个密匙都会变。
+
+一旦在pom里加入了这个denpendency, 就默认要对请求进行验证。如果访问API时不使用这个密匙的话，就会给出HTTP 401的错误（unauthorized）
+
+
+如何使用这个密匙？
+====================
+以POSTMAN为例
+====================
+dashboard上有Authorization, Headers, Body, Pre-request Script, Tests几个选项（如果使用POST方法）。点击Authorization, 
+type设为 Basic Auth
+Username默认用户名为 user
+Password为上面的密匙 7bc83738-313e-4525-acf2-67d7277c2e31
+
+
+以coding为例
+====================
+String pageUrl ="http://......";
+String username = "yourUsername";
+String password = "yourPassword";
+
+HttpParams httpParams = new BasicHttpParams();
+int timeoutConnection = 10000;
+HttpConnectionParams.setConnectionTimeout(httpParams, timeoutConnection);
+int timeoutSocket = 10000;
+HttpConnectionParams.setSoTimeout(httpParams, timeoutSocket);
+
+HttpClient httpClient = new DefaultHttpClient(httpParams);
+
+HttpGet httpGet = new HttpGet(pageUrl);
+String credential = Base64.encodeToString( (username+":"+password).getBytes("UTF-8"), Base64.DEFAULT);
+httpGet.setHeader("Authorization", "Basic " + credential.substring(0, credential.length()-1));
+httpGet.setHeader("Accept", "application/json");
+httpGet.setHeader("Connection", "close");
+						
+HttpResponse httpResponse = httpClient.execute(httpGet);
+StatusLine statusLine = httpResponse.getStatusLine();				
+if(statusLine.getStatusCode() == HttpStatus.SC_OK)
+{
+  ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+  httpResponse.getEntity().writeTo(outputStream);
+  String responseString = outputStream.toString();
+  System.out.println(responseString);
+  ......  //processding operations				
+}
+
+
+以coding使用RestTemplate为例
+============================
+String plainCreds = "willie:p@ssword";
+byte[] plainCredsBytes = plainCreds.getBytes();
+byte[] base64CredsBytes = Base64.encodeBase64(plainCredsBytes);
+String base64Creds = new String(base64CredsBytes);
+
+HttpHeaders headers = new HttpHeaders();
+headers.add("Authorization", "Basic " + base64Creds);
+
+//And this is to pass the header to the REST template:
+HttpEntity<String> request = new HttpEntity<String>(headers);
+ResponseEntity<Account> response = restTemplate.exchange(url, HttpMethod.GET, request, Account.class);
+Account account = response.getBody();
+
+
+private static void getEmployees()
+{
+    final String uri = "http://localhost:8080/springrestexample/employees.xml";
+
+    RestTemplate restTemplate = new RestTemplate();
+    String result = restTemplate.getForObject(uri, String.class);
+
+    System.out.println(result);
+}
+
+如何在spring boot server里Call另一个REST API（使用RestTemplate）
+=============================================================
+This website has some nice examples for using spring's RestTemplate(https://howtodoinjava.com/spring-restful/spring-restful-client-resttemplate-example/).
+Here is a code example of how it can work to get a simple object:
+
+private static void getEmployees()
+{
+    final String uri = "http://localhost:8080/springrestexample/employees.xml";
+
+    RestTemplate restTemplate = new RestTemplate();
+    String result = restTemplate.getForObject(uri, String.class);
+
+    System.out.println(result);
+}
+
+Or another example
+public class Application {
+
+    private static final Logger log = LoggerFactory.getLogger(Application.class);
+
+    public static void main(String args[]) {
+        RestTemplate restTemplate = new RestTemplate();
+        Quote quote = restTemplate.getForObject("http://gturnquist-quoters.cfapps.io/api/random", Quote.class);
+        log.info(quote.toString());
+    }
+
+}
+
+
+如何自己配置设置用户名和密匙？
+============================
+在application.properties文件里
+sercurity.user.name=pxiao
+sercurity.user.password=123456
+
+
+
+
+
